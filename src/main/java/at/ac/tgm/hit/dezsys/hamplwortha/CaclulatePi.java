@@ -1,16 +1,18 @@
 package at.ac.tgm.hit.dezsys.hamplwortha;
 
 
-import java.Calculate;
-
 public class CaclulatePi implements Calculate {
 
-
-	/**
-	 * @see java.Calculate#calc()
-	 */
-	public double calc() {
-		return 0;
-	}
+    /**
+     * @see Calculate#calc(int)
+     */
+    @Override
+    public double calc(int iterations) {
+        double res = 0;
+        for (int i = 1; i < iterations; i += 4) {
+            res += 1.0 / i - 1.0 / (i + 2);
+        }
+        return 4 * res;
+    }
 
 }

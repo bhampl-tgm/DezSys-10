@@ -2,11 +2,10 @@ package at.ac.tgm.hit.dezsys.hamplwortha;
 
 import java.util.List;
 
-public class LoadBalancer implements LoadBalancingAlgorithm {
+public class LoadBalancer {
     private List server;
 
-    @Override
-    public Calculate getServer() {
-        return null;
+    public List getServer() {
+        return this.server;
     }
 }

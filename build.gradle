@@ -2,8 +2,10 @@ group 'at.ac.tgm.hit.dezsys.hamplwortha'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'idea'
 
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
@@ -12,3 +14,35 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }
+
+task generateJavadoc(type: Javadoc) {
+    source = sourceSets.main.allJava
+    destinationDir = file("doc/javadoc")
+    classpath = configurations.compile
+    title = "DezSys-10 \"Load Balancing\""
+}
+
+jar {
+    dependsOn generateJavadoc
+    baseName = 'HamplWortha_Dezsys10'
+    version = '1.0-SNAPSHOT'
+    from sourceSets.main.allSource
+    from(javadoc.destinationDir) {
+        into('doc/javadoc')
+    }
+    from(projectDir) {
+        include 'doc/**'
+        exclude 'doc/*.docx'
+        exclude 'doc/*.odt'
+        exclude 'doc/*.tex'
+    }
+    from('.git') {
+        into('.git')
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.11'
+}
+
+compileJava.mustRunAfter clean
