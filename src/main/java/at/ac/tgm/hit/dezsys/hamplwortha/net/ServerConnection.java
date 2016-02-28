@@ -53,6 +53,17 @@ public class ServerConnection implements Closeable, AutoCloseable{
         return message;
     }
 
+    /**
+     * Sends a message to the client
+     *
+     * @param bytes the message in bytes
+     * @throws IOException if something went wrong
+     */
+    public void write(byte[] bytes) throws IOException {
+        this.out.writeInt(bytes.length);
+        this.out.write(bytes);
+    }
+
     @Override
     public void close() throws IOException{
         this.out.close();

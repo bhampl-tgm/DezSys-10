@@ -1,5 +1,5 @@
 package at.ac.tgm.hit.dezsys.hamplwortha;
 
 public interface Calculate {
-    public abstract double calc(int iterations);
+    double calc(int iterations);
 }

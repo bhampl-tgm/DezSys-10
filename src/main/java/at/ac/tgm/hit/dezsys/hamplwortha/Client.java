@@ -9,8 +9,8 @@ public class Client {
         ClientConnection clientconnection = new ClientConnection(host, port);
         try {
             clientconnection.connect();
-            clientconnection.write("CalculatePi 100000000".getBytes());
-            System.out.println("CalculatePi: " + new String(clientconnection.read()));
+            clientconnection.write("100000000".getBytes());
+            System.out.println("Calculate: " + new String(clientconnection.read()));
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
