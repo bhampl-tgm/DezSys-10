@@ -1,17 +1,11 @@
 package at.ac.tgm.hit.dezsys.hamplwortha;
 
-import org.kohsuke.args4j.Argument;
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Simon on 26.02.2016.
- */
 public class Parser {
 
 
@@ -31,14 +25,16 @@ public class Parser {
     private int alg;
 
     @Argument
-    private List<String> arguments = new ArrayList<String>();
+    private List<String> arguments = new ArrayList<>();
 
     public void doMain(String[] args) throws IOException {
-        CmdLineParser parser = new CmdLineParser(this);
-
+        //FIXME example code
         // if you have a wider console, you could increase the value;
         // here 80 is also the default
-        parser.setUsageWidth(80);
+        ParserProperties properties = ParserProperties.defaults();
+        properties.withUsageWidth(80);
+
+        CmdLineParser parser = new CmdLineParser(this, properties);
 
         try {
             // parse the arguments.
@@ -61,9 +57,7 @@ public class Parser {
             // print the list of available options
             parser.printUsage(System.err);
             System.err.println();
-
-            return;
         }
-        //TODO Hier deklarieren was weiter passiert
+        //TODO Logic
     }
 }
