@@ -18,6 +18,25 @@ public class Connection implements Closeable, AutoCloseable{
         this.out = new DataOutputStream(this.socket.getOutputStream());
     }
 
+    public Connection(String host, int port) throws IOException {
+        this(new Socket(host, port));
+    }
+
+    /**
+     * Copy constructor
+     *
+     * @param connection the old object
+     */
+    public Connection(Connection connection) {
+        this.socket = connection.getSocket();
+        this.in = connection.getIn();
+        this.out = connection.getOut();
+    }
+
+    public void createNewSocket() throws IOException {
+        this.socket = new Socket(this.socket.getInetAddress(), this.socket.getPort());
+    }
+
     public Socket getSocket() {
         return this.socket;
     }
@@ -50,6 +69,5 @@ public class Connection implements Closeable, AutoCloseable{
         this.out.close();
         this.in.close();
         this.socket.close();
-
     }
 }
