@@ -1,11 +1,11 @@
 package at.ac.tgm.hit.dezsys.hamplwortha.net;
 
+import at.ac.tgm.hit.dezsys.hamplwortha.Calculate;
+import at.ac.tgm.hit.dezsys.hamplwortha.Server;
+
 import java.io.Closeable;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
 
 /**
  * The server connection
@@ -13,66 +13,44 @@ import java.net.Socket;
  * @author Burkhard Hampl [bhampl@student.tgm.ac.at]
  * @version 1.0
  */
-public class ServerConnection implements Closeable, AutoCloseable{
+public class ServerConnection implements Closeable, AutoCloseable {
 
-    private ServerSocket serverSocket;
-    private Socket clientSocket;
-    private DataInputStream in;
-    private DataOutputStream out;
+    private final Calculate calculate;
+    private final ServerSocket serverSocket;
+    private final Server server;
+    private boolean run;
 
-    public ServerConnection(int port) throws IOException {
+    public ServerConnection(int port, Calculate calculate, Server server) throws IOException {
+        this.server = server;
         this.serverSocket = new ServerSocket(port);
+        this.calculate = calculate;
+        this.run = true;
     }
 
     /**
      * Starts the server
      */
-    public void start() {
-        new Thread(() -> {
-            try {
-                this.clientSocket = this.serverSocket.accept();
-                this.in = new DataInputStream(this.clientSocket.getInputStream());
-                this.out = new DataOutputStream(this.clientSocket.getOutputStream());
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.exit(1);
-            }
-        }).start();
-    }
-
-    /**
-     * Reads the first message form the server and returns it
-     *
-     * @return the message
-     * @throws IOException if something went wrong
-     */
-    public byte[] listenOnce() throws IOException {
-        int length = this.in.readInt();
-        byte[] message = new byte[length];
-        this.in.readFully(message, 0, message.length);
-        return message;
-    }
-
-    /**
-     * Sends a message to the client
-     *
-     * @param bytes the message in bytes
-     * @throws IOException if something went wrong
-     */
-    public void write(byte[] bytes) throws IOException {
-        this.out.writeInt(bytes.length);
-        this.out.write(bytes);
+    public void start() throws IOException {
+        while (this.run) {
+            Connection clientConnection = new Connection(this.serverSocket.accept());
+            new Thread(() -> {
+                try {
+                    server.incrementCount();
+                    String clientMsg = new String(clientConnection.read());
+                    clientConnection.write((calculate.calc(Integer.parseInt(clientMsg.replaceAll("[\\D]", ""))) + "").getBytes());
+                    clientConnection.close();
+                    server.decrementCount();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.exit(1);
+                }
+            }).start();
+        }
     }
 
     @Override
-    public void close() throws IOException{
-        this.out.close();
-        this.in.close();
-        this.clientSocket.close();
-
-    }
-
-    public DataOutputStream getOut() {
-        return this.out;
+    public void close() throws IOException {
+        this.run = false;
+        this.serverSocket.close();
     }
 }

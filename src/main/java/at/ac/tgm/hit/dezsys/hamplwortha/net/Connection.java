@@ -6,7 +6,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-public class Connection implements Closeable, AutoCloseable{
+public class Connection implements Closeable, AutoCloseable {
 
     private Socket socket;
     private DataInputStream in;

@@ -9,19 +9,19 @@ import java.util.List;
 public class Parser {
 
 
-    @Option(name="-t",usage="Typ: Server/Client/Loadbalancer gets started")
+    @Option(name = "-t", usage = "Typ: Server/Client/Loadbalancer gets started")
     private String type;
 
-    @Option(name="-p",usage="Port")
+    @Option(name = "-p", usage = "Port")
     private int port;
 
-    @Option(name="-h", usage="Host")
+    @Option(name = "-h", usage = "Host")
     private String host;
 
-    @Option(name="-i", usage="Iterations of Pi-Calculation")
+    @Option(name = "-i", usage = "Iterations of Pi-Calculation")
     private int iterations;
 
-    @Option(name="-a", usage="Algorithm")
+    @Option(name = "-a", usage = "Algorithm")
     private int alg;
 
     @Argument
@@ -45,10 +45,10 @@ public class Parser {
 
             // after parsing arguments, you should check
             // if enough arguments are given.
-            if( arguments.isEmpty() )
+            if (arguments.isEmpty())
                 throw new IllegalArgumentException("No argument is given");
 
-        } catch( CmdLineException e ) {
+        } catch (CmdLineException e) {
             // if there's a problem in the command line,
             // you'll get this exception. this will report
             // an error message.

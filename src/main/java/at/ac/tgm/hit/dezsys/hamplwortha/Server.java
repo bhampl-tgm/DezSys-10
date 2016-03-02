@@ -4,29 +4,36 @@ import at.ac.tgm.hit.dezsys.hamplwortha.net.ServerConnection;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class Server implements Closeable, AutoCloseable{
+public class Server implements Closeable, AutoCloseable {
 
-    private Calculate calculate;
+    private final AtomicInteger count;
     private final ServerConnection serverConnection;
+    private Calculate calculate;
     private boolean run;
 
     public Server(int serverPort, Calculate calculate) throws IOException {
         this.calculate = calculate;
-        serverConnection = new ServerConnection(serverPort);
-        this.run = false;
+        this.serverConnection = new ServerConnection(serverPort, calculate, this);
+        this.count = new AtomicInteger(0);
     }
 
     public void serve() throws IOException {
         this.serverConnection.start();
-        while (this.run) {
-            this.serverConnection.write(String.valueOf(this.calculate.calc(Integer.parseInt(new String(this.serverConnection.listenOnce())))).getBytes());
-        }
+        // this.serverConnection.write(String.valueOf(this.calculate.calc(Integer.parseInt(new String(this.serverConnection.listenOnce())))).getBytes());
+    }
+
+    public void incrementCount() {
+        this.count.incrementAndGet();
+    }
+
+    public void decrementCount() {
+        this.count.decrementAndGet();
     }
 
     @Override
     public void close() throws IOException {
-        this.run = false;
         this.serverConnection.close();
     }
 }
