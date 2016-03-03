@@ -9,22 +9,18 @@ public class WeightedDistribution implements LoadBalancingAlgorithm {
 
     private LoadBalancer loadBalancer;
 
-    public WeightedDistribution(LoadBalancer loadBalancer) {
-        this.loadBalancer = loadBalancer;
-    }
-
     /**
      * @see LoadBalancingAlgorithm#getServer()
      */
     @Override
-    public Connection getServer() {
+    public Connection getServer() throws IOException {
         Connection connection = this.loadBalancer.getServer().remove(0);
-        this.loadBalancer.addServer(connection);
+        this.loadBalancer.addServer(new Connection(connection));
         return connection;
     }
 
     @Override
-    public void addServer(Connection connection, int count) throws IOException {
+    public void addServer(Connection connection, int count) throws IOException, ClassNotFoundException {
         connection.getSocket().close();
         for (int i = 0; i < count; i++) {
             // copy constructor because we want to close and open the sockets of the connection independently
@@ -33,7 +29,7 @@ public class WeightedDistribution implements LoadBalancingAlgorithm {
     }
 
     @Override
-    public void addServer(Connection connection) throws IOException {
+    public void addServer(Connection connection) throws IOException, ClassNotFoundException {
         this.addServer(connection, 1);
     }
 
@@ -43,4 +39,13 @@ public class WeightedDistribution implements LoadBalancingAlgorithm {
     }
 
 
+    @Override
+    public void setLoadBalancer(LoadBalancer loadBalancer) {
+        this.loadBalancer = loadBalancer;
+    }
+
+    @Override
+    public int getServerCount() {
+        return this.loadBalancer.getServer().size();
+    }
 }

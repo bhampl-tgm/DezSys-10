@@ -22,12 +22,18 @@ public class ServerConnection implements Closeable, AutoCloseable {
     private final ServerSocket serverSocket;
     private final Server server;
     private boolean run;
+    private int weight;
 
-    public ServerConnection(int port, Calculate calculate, Server server) throws IOException {
+    public ServerConnection(int port, Calculate calculate, Server server, int weight) throws IOException {
         this.server = server;
         this.serverSocket = new ServerSocket(port);
         this.calculate = calculate;
+        this.weight = weight;
         this.run = true;
+    }
+
+    public ServerConnection(int port, Calculate calculate, Server server) throws IOException {
+        this(port, calculate, server, 1);
     }
 
     /**
@@ -38,14 +44,21 @@ public class ServerConnection implements Closeable, AutoCloseable {
             Connection clientConnection = new Connection(this.serverSocket.accept());
             new Thread(() -> {
                 try {
-                    logger.info("Incrementing server connection count to " + server.incrementCount());
+
                     String clientMsg = new String(clientConnection.read());
                     logger.debug("Server getting message with content: " + clientMsg);
-                    clientConnection.write((calculate.calc(Integer.parseInt(clientMsg.replaceAll("[\\D]", ""))) + "").getBytes());
+                    if (clientMsg.equals("server connection count")) {
+                        logger.debug("LoadBalancer Request request");
+                        clientConnection.write((this.server.getCount() + "").getBytes());
+                        clientConnection.close();
+                        return;
+                    }
+                    logger.info("Incrementing server connection count to " + server.incrementCount());
+                    clientConnection.write((calculate.calc(Long.parseLong(clientMsg.replaceAll("[\\D]", ""))) + "").getBytes());
                     clientConnection.close();
-                    logger.info("Incrementing server connection count to " + server.decrementCount());
+                    logger.info("Decrementing server connection count to " + server.decrementCount());
                 } catch (Exception e) {
-                    logger.error(e);
+                    logger.error("", e);
                     System.exit(1);
                 }
             }).start();
@@ -57,5 +70,11 @@ public class ServerConnection implements Closeable, AutoCloseable {
         logger.info("Shutting down ServerConnection");
         this.run = false;
         this.serverSocket.close();
+    }
+
+    public void connectToLoadBalancer(String loadBalancerHost, int loadBalancerPort) throws IOException {
+        Connection loadBalancerConnection = new Connection(loadBalancerHost, loadBalancerPort);
+        loadBalancerConnection.write(("server " + this.weight + " " + this.serverSocket.getLocalPort()).getBytes());
+        loadBalancerConnection.close();
     }
 }

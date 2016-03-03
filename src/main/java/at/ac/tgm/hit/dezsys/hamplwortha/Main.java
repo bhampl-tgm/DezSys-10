@@ -1,5 +1,6 @@
 package at.ac.tgm.hit.dezsys.hamplwortha;
 
+import at.ac.tgm.hit.dezsys.hamplwortha.util.Parser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,7 +14,7 @@ public class Main {
             logger.info("Starting Application");
             new Parser().doMain(args);
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("", e);
             System.exit(1);
         }
     }

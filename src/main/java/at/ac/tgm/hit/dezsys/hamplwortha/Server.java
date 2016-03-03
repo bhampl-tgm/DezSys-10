@@ -13,9 +13,9 @@ public class Server implements Closeable, AutoCloseable {
     private Calculate calculate;
     private boolean run;
 
-    public Server(int serverPort, Calculate calculate) throws IOException {
+    public Server(int serverPort, Calculate calculate, int weight) throws IOException {
         this.calculate = calculate;
-        this.serverConnection = new ServerConnection(serverPort, calculate, this);
+        this.serverConnection = new ServerConnection(serverPort, calculate, this, weight);
         this.count = new AtomicInteger(0);
     }
 
@@ -24,12 +24,20 @@ public class Server implements Closeable, AutoCloseable {
         // this.serverConnection.write(String.valueOf(this.calculate.calc(Integer.parseInt(new String(this.serverConnection.listenOnce())))).getBytes());
     }
 
+    public void connectToLoadBalancer(String loadBalancerHost, int loadBalancerPort) throws IOException {
+        this.serverConnection.connectToLoadBalancer(loadBalancerHost, loadBalancerPort);
+    }
+
     public int incrementCount() {
         return this.count.incrementAndGet();
     }
 
     public int decrementCount() {
         return this.count.decrementAndGet();
+    }
+
+    public int getCount() {
+        return this.count.get();
     }
 
     @Override

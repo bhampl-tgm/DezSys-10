@@ -7,9 +7,13 @@ import java.io.IOException;
 public interface LoadBalancingAlgorithm {
     Connection getServer() throws IOException;
 
-    void addServer(Connection connection, int count) throws IOException;
+    void addServer(Connection connection, int count) throws IOException, ClassNotFoundException;
 
-    void addServer(Connection connection) throws IOException;
+    void addServer(Connection connection) throws IOException, ClassNotFoundException;
 
     void removeServer(Connection connection) throws IOException;
+
+    void setLoadBalancer(LoadBalancer loadBalancer);
+
+    int getServerCount();
 }

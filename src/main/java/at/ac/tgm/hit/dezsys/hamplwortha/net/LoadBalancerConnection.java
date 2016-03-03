@@ -7,6 +7,8 @@ import org.apache.logging.log4j.Logger;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LoadBalancerConnection implements Closeable, AutoCloseable {
 
@@ -33,7 +35,24 @@ public class LoadBalancerConnection implements Closeable, AutoCloseable {
                     String clientMsg = new String(clientConnection.read());
                     logger.debug("LoadBalancer getting message with content: " + clientMsg);
                     if (this.isServer(clientMsg)) {
-                        this.loadBalancingAlgorithm.addServer(clientConnection, Integer.parseInt(clientMsg.replaceAll("[\\D]", "")));
+                        logger.info("Server connected, adding him to the server list");
+                        Pattern pattern = Pattern.compile("server (\\d+) (\\d+)");
+                        Matcher matcher = pattern.matcher(clientMsg);
+                        if (matcher.matches()) {
+                            clientConnection.setPort(Integer.parseInt(matcher.group(2)));
+                            clientConnection.setHost(clientConnection.getSocket().getInetAddress().getHostAddress());
+                            logger.debug("Connected Server: " + clientConnection.getSocket().getInetAddress().getHostAddress() + ":" + matcher.group(2));
+                            this.loadBalancingAlgorithm.addServer(clientConnection, Integer.parseInt(matcher.group(1)));
+                        } else {
+                            logger.warn("The given server message was not correct: " + clientMsg);
+                            clientConnection.close();
+                        }
+                        return;
+                    }
+                    if (this.loadBalancingAlgorithm.getServerCount() == 0) {
+                        logger.warn("No server connected");
+                        clientConnection.write("No server connected".getBytes());
+                        clientConnection.close();
                         return;
                     }
                     Connection serverConnection = this.loadBalancingAlgorithm.getServer();
@@ -42,8 +61,8 @@ public class LoadBalancerConnection implements Closeable, AutoCloseable {
                     clientConnection.write(serverConnection.read());
                     serverConnection.close();
                     clientConnection.close();
-                } catch (IOException e) {
-                    logger.error(e);
+                } catch (IOException|ClassNotFoundException e) {
+                    logger.error("", e);
                     System.exit(1);
                 }
             }).start();
