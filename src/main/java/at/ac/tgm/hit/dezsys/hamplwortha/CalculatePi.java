@@ -1,7 +1,7 @@
 package at.ac.tgm.hit.dezsys.hamplwortha;
 
 
-public class CaclulatePi implements Calculate {
+public class CalculatePi implements Calculate {
 
     /**
      * @see Calculate#calc(int)
