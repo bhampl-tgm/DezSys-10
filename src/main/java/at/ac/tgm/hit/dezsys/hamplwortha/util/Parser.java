@@ -14,6 +14,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class handles command line arguments.
+ *
+ * @author Simon Worhta [swortha@student.tgm.ac.at]
+ * @version 1.0
+ */
 public class Parser {
 
     private static final Logger logger = LogManager.getLogger(Parser.class.getName());
@@ -51,6 +57,12 @@ public class Parser {
     @Argument
     private List<String> arguments = new ArrayList<String>();
 
+    /**
+     * Checks the command line arguments.
+     *
+     * @param args the command line arguments.
+     * @throws IOException if an I/O error occurs when creating the connection.
+     */
     public void doMain(String[] args) throws IOException {
         ParserProperties properties = ParserProperties.defaults();
         properties.withUsageWidth(80);
@@ -108,6 +120,11 @@ public class Parser {
         }
     }
 
+    /**
+     * Prints the usage.
+     *
+     * @param parser the command line parser.
+     */
     private void printUsage(CmdLineParser parser) {
         logger.error("java HamplWortha_Dezsys10-1.0 [options...] arguments...");
         parser.printUsage(new LogOutputStream(logger, Level.ERROR));

@@ -1,11 +1,13 @@
 package at.ac.tgm.hit.dezsys.hamplwortha;
 
-
+/**
+ * This class is a implementation of calculate with pi
+ *
+ * @author Burkhard Hampl [bhampl@student.tgm.ac.at]
+ * @version 1.0
+ */
 public class CalculatePi implements Calculate {
 
-    /**
-     * @see Calculate#calc(long)
-     */
     @Override
     public double calc(long iterations) {
         double res = 0;

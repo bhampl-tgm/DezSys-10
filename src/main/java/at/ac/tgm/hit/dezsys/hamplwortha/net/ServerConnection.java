@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 
 /**
- * The server connection
+ * The server connection.
  *
  * @author Burkhard Hampl [bhampl@student.tgm.ac.at]
  * @version 1.0
@@ -24,6 +24,15 @@ public class ServerConnection implements Closeable, AutoCloseable {
     private boolean run;
     private int weight;
 
+    /**
+     * Creates a new server connection.
+     *
+     * @param port      the port.
+     * @param calculate the calculate instance.
+     * @param server    the server instance.
+     * @param weight    the weight of the server.
+     * @throws IOException if an I/O error occurs when creating the connection.
+     */
     public ServerConnection(int port, Calculate calculate, Server server, int weight) throws IOException {
         this.server = server;
         this.serverSocket = new ServerSocket(port);
@@ -32,12 +41,22 @@ public class ServerConnection implements Closeable, AutoCloseable {
         this.run = true;
     }
 
+    /**
+     * Creates a new server connection.
+     *
+     * @param port      the port.
+     * @param calculate the calculate instance.
+     * @param server    the server instance.
+     * @throws IOException if an I/O error occurs when creating the connection.
+     */
     public ServerConnection(int port, Calculate calculate, Server server) throws IOException {
         this(port, calculate, server, 1);
     }
 
     /**
-     * Starts the server
+     * Starts the server.
+     *
+     * @throws IOException if an I/O error occurs when creating the connection.
      */
     public void start() throws IOException {
         while (this.run) {
@@ -72,6 +91,13 @@ public class ServerConnection implements Closeable, AutoCloseable {
         this.serverSocket.close();
     }
 
+    /**
+     * Connects to the load balancer.
+     *
+     * @param loadBalancerHost the load balancer host.
+     * @param loadBalancerPort the load balancer port.
+     * @throws IOException if an I/O error occurs when creating the connection.
+     */
     public void connectToLoadBalancer(String loadBalancerHost, int loadBalancerPort) throws IOException {
         Connection loadBalancerConnection = new Connection(loadBalancerHost, loadBalancerPort);
         loadBalancerConnection.write(("server " + this.weight + " " + this.serverSocket.getLocalPort()).getBytes());

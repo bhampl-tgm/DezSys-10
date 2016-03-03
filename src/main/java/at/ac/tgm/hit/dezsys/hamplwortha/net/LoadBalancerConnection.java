@@ -10,6 +10,12 @@ import java.net.ServerSocket;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * This class handles the LoadBalancer connections.
+ *
+ * @author Burkhard Hampl [bhampl@student.tgm.ac.at]
+ * @version 1.0
+ */
 public class LoadBalancerConnection implements Closeable, AutoCloseable {
 
     private static final Logger logger = LogManager.getLogger(LoadBalancerConnection.class.getName());
@@ -18,6 +24,13 @@ public class LoadBalancerConnection implements Closeable, AutoCloseable {
     private ServerSocket serverSocket;
     private boolean run;
 
+    /**
+     * Creates a new load balancer connection.
+     *
+     * @param clientPort             the client port.
+     * @param loadBalancingAlgorithm the load balancing algorithm.
+     * @throws IOException if an I/O error occurs when creating the connection.
+     */
     public LoadBalancerConnection(int clientPort, LoadBalancingAlgorithm loadBalancingAlgorithm) throws IOException {
         this.serverSocket = new ServerSocket(clientPort);
         this.loadBalancingAlgorithm = loadBalancingAlgorithm;
@@ -25,7 +38,9 @@ public class LoadBalancerConnection implements Closeable, AutoCloseable {
     }
 
     /**
-     * Starts the server
+     * Starts the server.
+     *
+     * @throws IOException if an I/O error occurs when creating the connection.
      */
     public void start() throws IOException {
         while (this.run) {
@@ -61,7 +76,7 @@ public class LoadBalancerConnection implements Closeable, AutoCloseable {
                     clientConnection.write(serverConnection.read());
                     serverConnection.close();
                     clientConnection.close();
-                } catch (IOException|ClassNotFoundException e) {
+                } catch (IOException e) {
                     logger.error("", e);
                     System.exit(1);
                 }

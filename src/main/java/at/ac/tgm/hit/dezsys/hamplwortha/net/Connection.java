@@ -6,6 +6,12 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
+/**
+ * This class handles socket connections.
+ *
+ * @author Burkhard Hampl [bhampl@student.tgm.ac.at]
+ * @version 1.0
+ */
 public class Connection implements Closeable, AutoCloseable {
 
 
@@ -15,12 +21,25 @@ public class Connection implements Closeable, AutoCloseable {
     private int port = 0;
     private String host = "";
 
+    /**
+     * Creates a new connection with the given socket.
+     *
+     * @param socket the socket.
+     * @throws IOException if an I/O error occurs when creating the connection.
+     */
     public Connection(Socket socket) throws IOException {
         this.socket = socket;
         this.in = new DataInputStream(this.socket.getInputStream());
         this.out = new DataOutputStream(this.socket.getOutputStream());
     }
 
+    /**
+     * Creates a new connection with the given host and port.
+     *
+     * @param host the host.
+     * @param port the port.
+     * @throws IOException if an I/O error occurs when creating the connection.
+     */
     public Connection(String host, int port) throws IOException {
         this(new Socket(host, port));
         this.port = port;
@@ -28,9 +47,10 @@ public class Connection implements Closeable, AutoCloseable {
     }
 
     /**
-     * Copy constructor
+     * Copy constructor.
      *
-     * @param connection the old object
+     * @param connection the old object.
+     * @throws IOException if an I/O error occurs when creating the connection.
      */
     public Connection(Connection connection) throws IOException {
         this.socket = connection.getSocket();
@@ -40,15 +60,21 @@ public class Connection implements Closeable, AutoCloseable {
         this.host = connection.getHost();
     }
 
+
+    /**
+     * Creates a new socket with the values of the previous one.
+     *
+     * @throws IOException if an I/O error occurs when creating the connection.
+     */
     public void createNewSocket() throws IOException {
         if (this.host == null) this.host = "";
         if (this.host.equals("") && this.port == 0) {
-            this.socket = new Socket(this.socket.getInetAddress() , this.socket.getPort());
-        } else if (this.host.equals("") && this.port != 0){
+            this.socket = new Socket(this.socket.getInetAddress(), this.socket.getPort());
+        } else if (this.host.equals("") && this.port != 0) {
             this.socket = new Socket(this.socket.getInetAddress(), this.port);
-        } else if (!this.host.equals("") && this.port == 0){
+        } else if (!this.host.equals("") && this.port == 0) {
             this.socket = new Socket(this.host, this.socket.getPort());
-        } else if (!this.host.equals("") && this.port != 0){
+        } else if (!this.host.equals("") && this.port != 0) {
             this.socket = new Socket(this.host, this.port);
         }
         this.in = new DataInputStream(this.socket.getInputStream());
@@ -83,6 +109,12 @@ public class Connection implements Closeable, AutoCloseable {
         this.host = host;
     }
 
+    /**
+     * Reads from the socket of the connection.
+     *
+     * @return the message in bytes.
+     * @throws IOException if an I/O error occurs when creating the connection.
+     */
     public byte[] read() throws IOException {
         int length = this.in.readInt();
         if (length > 0) {
@@ -93,6 +125,12 @@ public class Connection implements Closeable, AutoCloseable {
         return null;
     }
 
+    /**
+     * Writes to the socket of the connection.
+     *
+     * @param bytes the message in bytes.
+     * @throws IOException if an I/O error occurs when creating the connection.
+     */
     public void write(byte[] bytes) throws IOException {
         this.out.writeInt(bytes.length);
         this.out.write(bytes);
