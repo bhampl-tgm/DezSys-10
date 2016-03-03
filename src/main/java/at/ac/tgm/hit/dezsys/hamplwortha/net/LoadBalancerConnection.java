@@ -1,6 +1,8 @@
 package at.ac.tgm.hit.dezsys.hamplwortha.net;
 
 import at.ac.tgm.hit.dezsys.hamplwortha.LoadBalancingAlgorithm;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -8,6 +10,7 @@ import java.net.ServerSocket;
 
 public class LoadBalancerConnection implements Closeable, AutoCloseable {
 
+    private static final Logger logger = LogManager.getLogger(LoadBalancerConnection.class.getName());
     private static final String SERVER_IDENTIFIER = "server";
     private final LoadBalancingAlgorithm loadBalancingAlgorithm;
     private ServerSocket serverSocket;
@@ -28,6 +31,7 @@ public class LoadBalancerConnection implements Closeable, AutoCloseable {
             new Thread(() -> {
                 try {
                     String clientMsg = new String(clientConnection.read());
+                    logger.debug("LoadBalancer getting message with content: " + clientMsg);
                     if (this.isServer(clientMsg)) {
                         this.loadBalancingAlgorithm.addServer(clientConnection, Integer.parseInt(clientMsg.replaceAll("[\\D]", "")));
                         return;
@@ -39,7 +43,7 @@ public class LoadBalancerConnection implements Closeable, AutoCloseable {
                     serverConnection.close();
                     clientConnection.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error(e);
                     System.exit(1);
                 }
             }).start();
@@ -52,6 +56,7 @@ public class LoadBalancerConnection implements Closeable, AutoCloseable {
 
     @Override
     public void close() throws IOException {
+        logger.info("Shutting down LoadBalancerConnection");
         this.run = false;
         this.serverSocket.close();
     }

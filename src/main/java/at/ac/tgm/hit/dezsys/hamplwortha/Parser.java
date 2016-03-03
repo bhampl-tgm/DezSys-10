@@ -1,5 +1,8 @@
 package at.ac.tgm.hit.dezsys.hamplwortha;
 
+import at.ac.tgm.hit.dezsys.hamplwortha.util.LogOutputStream;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.kohsuke.args4j.*;
 
 import java.io.IOException;
@@ -8,6 +11,7 @@ import java.util.List;
 
 public class Parser {
 
+    private static final Logger logger = LogManager.getLogger(Parser.class.getName());
 
     @Option(name = "-t", usage = "Typ: Server/Client/Loadbalancer gets started")
     private String type;
@@ -52,10 +56,11 @@ public class Parser {
             // if there's a problem in the command line,
             // you'll get this exception. this will report
             // an error message.
-            System.err.println(e.getMessage());
+            logger.error(e.getMessage());
             System.err.println("java SampleMain [options...] arguments...");
             // print the list of available options
-            parser.printUsage(System.err);
+
+            parser.printUsage(new LogOutputStream(logger, logger.getLevel()));
             System.err.println();
         }
         //TODO Logic

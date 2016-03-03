@@ -24,12 +24,12 @@ public class Server implements Closeable, AutoCloseable {
         // this.serverConnection.write(String.valueOf(this.calculate.calc(Integer.parseInt(new String(this.serverConnection.listenOnce())))).getBytes());
     }
 
-    public void incrementCount() {
-        this.count.incrementAndGet();
+    public int incrementCount() {
+        return this.count.incrementAndGet();
     }
 
-    public void decrementCount() {
-        this.count.decrementAndGet();
+    public int decrementCount() {
+        return this.count.decrementAndGet();
     }
 
     @Override

@@ -2,6 +2,8 @@ package at.ac.tgm.hit.dezsys.hamplwortha;
 
 import at.ac.tgm.hit.dezsys.hamplwortha.net.Connection;
 import at.ac.tgm.hit.dezsys.hamplwortha.net.LoadBalancerConnection;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -10,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class LoadBalancer implements Closeable, AutoCloseable {
+    private static final Logger logger = LogManager.getLogger(LoadBalancer.class.getName());
     private final LoadBalancerConnection loadBalancerConnection;
     private List<Connection> servers;
 
@@ -19,6 +22,7 @@ public class LoadBalancer implements Closeable, AutoCloseable {
     }
 
     public void balance() throws IOException {
+        logger.info("Starting LoadBalancer");
         this.loadBalancerConnection.start();
     }
 
@@ -36,6 +40,7 @@ public class LoadBalancer implements Closeable, AutoCloseable {
 
     @Override
     public void close() throws IOException {
+        logger.info("Shutting down LoadBalancer");
         this.loadBalancerConnection.close();
     }
 }

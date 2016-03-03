@@ -2,6 +2,8 @@ package at.ac.tgm.hit.dezsys.hamplwortha.net;
 
 import at.ac.tgm.hit.dezsys.hamplwortha.Calculate;
 import at.ac.tgm.hit.dezsys.hamplwortha.Server;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -15,6 +17,7 @@ import java.net.ServerSocket;
  */
 public class ServerConnection implements Closeable, AutoCloseable {
 
+    private static final Logger logger = LogManager.getLogger(ServerConnection.class.getName());
     private final Calculate calculate;
     private final ServerSocket serverSocket;
     private final Server server;
@@ -35,13 +38,14 @@ public class ServerConnection implements Closeable, AutoCloseable {
             Connection clientConnection = new Connection(this.serverSocket.accept());
             new Thread(() -> {
                 try {
-                    server.incrementCount();
+                    logger.info("Incrementing server connection count to " + server.incrementCount());
                     String clientMsg = new String(clientConnection.read());
+                    logger.debug("Server getting message with content: " + clientMsg);
                     clientConnection.write((calculate.calc(Integer.parseInt(clientMsg.replaceAll("[\\D]", ""))) + "").getBytes());
                     clientConnection.close();
-                    server.decrementCount();
+                    logger.info("Incrementing server connection count to " + server.decrementCount());
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error(e);
                     System.exit(1);
                 }
             }).start();
@@ -50,6 +54,7 @@ public class ServerConnection implements Closeable, AutoCloseable {
 
     @Override
     public void close() throws IOException {
+        logger.info("Shutting down ServerConnection");
         this.run = false;
         this.serverSocket.close();
     }
