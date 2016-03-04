@@ -46,7 +46,7 @@ public class Parser {
     private String host = "127.0.0.1";
 
     @Option(name = "-i", usage = "Iterations of Pi-Calculation", handler = LongOptionHandler.class)
-    private long iterations = 100000000;
+    private long iterations = 10000000000L;
 
     @Option(name = "-a", usage = "Algorithm, 1 ... Least Connection, 2 ... Weighted Distribution")
     private int alg;
